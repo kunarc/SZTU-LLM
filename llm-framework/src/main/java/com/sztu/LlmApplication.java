@@ -8,6 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class LlmApplication {
     public static void main(String[] args) {
         SpringApplication.run(LlmApplication.class, args);
-        log.info("大模型服务启动");
+        log.info("大模型服务启动...");
     }
 }
