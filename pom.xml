@@ -22,6 +22,7 @@
     <properties>
         <java.version>8</java.version>
         <mybatis.spring>2.2.0</mybatis.spring>
+        <mybatis.plus.version>3.3.0</mybatis.plus.version>
         <lombok>1.18.20</lombok>
         <fastjson>1.2.76</fastjson>
         <commons.lang>2.6</commons.lang>
@@ -40,6 +41,12 @@
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis.spring}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis.plus.version}</version>
             </dependency>
 
             <dependency>
