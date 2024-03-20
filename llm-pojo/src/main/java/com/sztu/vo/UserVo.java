@@ -1,29 +1,19 @@
-package com.sztu.entity;
+package com.sztu.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@TableName("users")
-public class User implements Serializable {
+public class UserVo implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
-    @TableField("student_id")
     private String studentId;
     private String name;
     private String password;
-    @TableField("create_time")
     private LocalDateTime createTime;
-    @TableField("update_time")
     private LocalDateTime updateTime;
+    private String token;
 }
