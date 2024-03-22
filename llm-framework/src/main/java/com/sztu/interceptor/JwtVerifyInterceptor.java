@@ -1,5 +1,6 @@
 package com.sztu.interceptor;
 
+import com.sztu.context.BaseContext;
 import com.sztu.properties.JwtProperties;
 import com.sztu.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -31,14 +32,14 @@ public class JwtVerifyInterceptor implements HandlerInterceptor {
             return false;
         }
         // 解析token
-        // 等下把try catch去掉试试， 看看全局异常处理器是否能够生效。
         try {
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
             Long id = Long.valueOf(claims.get("USER_ID").toString());
-            log.info("用户id: {}", id);
+            log.info("当前登录用户的id: {}", id);
+            BaseContext.setCurrentId(id);
             return true;
         } catch (Exception ex) {
-            log.info("出现异常：{}", ex);
+            log.info("jwt校验未通过");
             response.setStatus(401);
             return false;
         }

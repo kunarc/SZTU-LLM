@@ -1,6 +1,6 @@
 package com.sztu.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,8 +12,9 @@ public class UserVo implements Serializable {
     private Long id;
     private String studentId;
     private String name;
-    private String password;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
     private String token;
 }

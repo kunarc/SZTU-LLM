@@ -26,8 +26,4 @@ public class QuestionBankController {
         return Result.success(answer);
     }
 
-
-
-
-
 }
