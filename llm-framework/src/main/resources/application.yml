@@ -8,6 +8,10 @@ spring:
     url: jdbc:mysql://127.0.0.1/chatbot?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&useSSL=false
     username: root
     password: 200483
+  redis:
+    port: 6379
+    host: localhost
+    database: 3
 mybatis-plus:
   global-config:
     db-config:
