@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @Slf4j
@@ -64,17 +63,14 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, Chat> implements Ch
         Chat chat = new Chat(null, userId, "新建聊天" + count, LocalDateTime.now());
         if (this.save(chat)) {
             log.info("新增聊天成功: {}", chat);
-            cleanCache(CHAT_KEY);
+            cleanCache(CHAT_KEY + userId);
         }
         else {
             throw new AddChatException("新增聊天失败");
         }
     }
     private void cleanCache(String key) {
-        Set<String> keys = redisTemplate.keys(key + "*");
-        if (keys != null) {
-            redisTemplate.delete(keys);
-        }
+        redisTemplate.delete(key);
         log.info("清理缓存成功!!!");
     }
 }
