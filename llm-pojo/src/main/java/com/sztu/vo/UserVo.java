@@ -12,7 +12,6 @@ public class UserVo implements Serializable {
     private Long id;
     private String studentId;
     private String name;
-    private String password;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
