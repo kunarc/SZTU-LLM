@@ -16,7 +16,7 @@ public class QuestionBankController {
     @Autowired
     private QuestionBankService questionBankService;
 
-    @PostMapping("/search{id}")
+    @PostMapping("/search/{id}")
     public Result<String> SearchQuestion(@PathVariable("id") Integer id){
         log.info("id:{}",id);
         QuestionBank questionBank = questionBankService.getById(id);
