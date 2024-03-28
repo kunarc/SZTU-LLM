@@ -1,14 +1,17 @@
 package com.sztu.web;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sztu.entity.QuestionBank;
 import com.sztu.result.Result;
 import com.sztu.service.QuestionBankService;
 import com.sztu.vo.QuestionBankVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -20,26 +23,30 @@ public class QuestionBankController {
 
     /***
      * 根据题号查询题目答案
-     * @param id
+     * @param
      * @return
      */
-    @PostMapping("/search{id}")
-    public Result<String> searchQuestion(@PathVariable("id") Long id){
-        log.info("id:{}",id);
-        QuestionBank questionBank = questionBankService.getById(id);
-        String answer = questionBank.getAnswer();
-        log.info("answer:{}",answer);
-        //返回结果
-        return Result.success(answer);
-    }
+    @PostMapping("/search/{name}")
+    public Result<List<QuestionBankVo>> searchQuestion(@PathVariable("name") String name){
+        LambdaQueryWrapper<QuestionBank> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(QuestionBank::getName, name).select(QuestionBank::getId,QuestionBank::getName);
+        List<QuestionBank> questionBanks = questionBankService.getBaseMapper().selectList(queryWrapper);
+        List<QuestionBankVo> res = new ArrayList<>();
+        if (questionBanks == null || questionBanks.isEmpty()) {
+            return Result.success(res);
+        }
 
-    /***
-     * 查询题库中的题目返回给前端
-     * @return
-     */
+        questionBanks.forEach((q)-> {
+            QuestionBankVo questionBankVo = new QuestionBankVo();
+            BeanUtils.copyProperties(q, questionBankVo);
+            res.add(questionBankVo);
+            //log.info("题目：{}", questionBankVo);
+        });
+        //log.info("题目：{}", res);
+        return Result.success(res);
+    }
     @GetMapping
-    public Result<List<QuestionBankVo>> getQuestions() {
-        log.info("查询题库中的题目");
-        return null;
+    public Result<QuestionBank> getQuestionBank(@RequestParam("id") Long id) {
+        return Result.success(questionBankService.getById(id));
     }
 }

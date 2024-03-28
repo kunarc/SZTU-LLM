@@ -7,6 +7,6 @@ import com.sztu.vo.ChatVo;
 import java.util.*;
 public interface ChatService extends IService<Chat> {
     Result<List<ChatVo>> getChatHistory();
-
-    void saveChat(Integer count);
+    List<Long> getChatHistoryId(String name, Long userId);
+    void saveChat();
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sztu.mapper.ChatDetailsMapper">
+    <select id="criticalSearch" resultType="java.lang.Long">
+        select distinct chat_history_id from chat_details
+        <where>
+            (user_chat like concat('%', #{chatDetailsDto.context}, '%') or ai_chat like concat('%', #{chatDetailsDto.context}, '%')) and
+            chat_history_id in
+            <foreach collection="chatDetailsDto.chatHistoryIds" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+</mapper>

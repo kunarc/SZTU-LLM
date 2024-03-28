@@ -21,9 +21,9 @@ public class QuestionBank implements Serializable {
 
     private Long id;
 
+
     private String name;
 
-    private String answer;
 
     private String description;
 

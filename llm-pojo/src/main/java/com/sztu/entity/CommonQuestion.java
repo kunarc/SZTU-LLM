@@ -14,13 +14,11 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("chat_history")
-public class Chat implements Serializable {
+@TableName("common_question")
+public class CommonQuestion implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
-    @TableField("user_id")
-    private Long userId;
-    private String name;
+    private String description;
     @TableField("create_time")
     private LocalDateTime createTime;
 }

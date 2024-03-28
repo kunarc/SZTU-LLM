@@ -9,11 +9,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @Slf4j
+
 public class WebMvcConfiguration implements WebMvcConfigurer {
     @Autowired
     private JwtVerifyInterceptor jwtVerifyInterceptor;
 
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(jwtVerifyInterceptor).addPathPatterns("/**").excludePathPatterns("/user/login");
+        registry.addInterceptor(jwtVerifyInterceptor).addPathPatterns("/**").excludePathPatterns("/user/login").excludePathPatterns("/websocket");
     }
 }
