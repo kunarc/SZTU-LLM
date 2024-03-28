@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @TableName("question_bank")
 public class QuestionBank implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -32,6 +33,5 @@ public class QuestionBank implements Serializable {
 
     @TableField("update_time")
     private LocalDateTime updateTime;
-
 
 }
