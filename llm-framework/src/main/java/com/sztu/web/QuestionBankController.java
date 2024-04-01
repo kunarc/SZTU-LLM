@@ -49,7 +49,7 @@ public class QuestionBankController {
         //log.info("题目：{}", res);
         return Result.success(res);
     }
-    @GetMapping("/{id}")
+    @GetMapping
     public Result<QuestionBank> getQuestionBank(@RequestParam("id") Long id) {
         return Result.success(questionBankService.getById(id));
     }
@@ -65,13 +65,21 @@ public class QuestionBankController {
         return Result.success();
     }
 
-    @GetMapping
-    public Result<List<QuestionBank>> getQuestionBankCollection() {
-        Long userId = BaseContext.getCurrentId();
+    @GetMapping("/{userId}")
+    public Result<List<QuestionBank>> getQuestionBankCollection(@PathVariable("userId") Long userId) {
         LambdaQueryWrapper<Collection> queryWrapper = new LambdaQueryWrapper();
-        queryWrapper.eq(Collection::getId,userId);
-        List questionBankIds = collectionService.list(queryWrapper);
-        List<QuestionBank> questionBanks = questionBankService.getBaseMapper().selectBatchIds(questionBankIds);
-        return Result.success(questionBanks);
+        queryWrapper.eq(Collection::getUserId, userId);
+        List<Collection> questionBankIds = collectionService.list(queryWrapper);
+        if (queryWrapper != null) {
+            //log.info("userId: " + userId);
+            //log.info("questionBankIds:{}", questionBankIds);
+            List<Long> idList = new ArrayList<Long>();
+            for(Collection t : questionBankIds){
+                idList.add(t.getQuestionId());
+            }
+            List<QuestionBank> questionBanks = questionBankService.getBaseMapper().selectBatchIds(idList);
+            return Result.success(questionBanks);
+        }
+        return Result.error("查询失败");
     }
 }
