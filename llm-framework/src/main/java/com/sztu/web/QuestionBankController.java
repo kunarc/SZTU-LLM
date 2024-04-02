@@ -57,22 +57,16 @@ public class QuestionBankController {
     @PutMapping
     public Result<?> CreateNewCollection(@RequestParam("id") Long id) {
         Long userId = BaseContext.getCurrentId();
-
-        LambdaQueryWrapper<Collection> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Collection::getUserId, userId).eq(Collection::getQuestionId, id);
-        int count = collectionService.count(queryWrapper);
-        if (count > 0) {
-            // 已经收藏过该题目
-            return Result.error("您已经收藏过该题目");
-        } else {
-            // 未收藏过该题目，创建新的收藏记录
-            Collection collection = new Collection();
-            collection.setUserId(userId);
-            collection.setQuestionId(id);
-            collectionService.save(collection);
-            //log.info("收藏成功");
-            return Result.success();
+        Result<Boolean> isNewCollection = isCollected(id);
+        if(isNewCollection.getData()){
+            return Result.error("您已收藏该题目");
         }
+        // 未收藏过该题目，创建新的收藏记录
+        Collection collection = new Collection();
+        collection.setUserId(userId);
+        collection.setQuestionId(id);
+        collectionService.save(collection);
+        return Result.success("收藏成功");
     }
 
     @GetMapping("/{userId}")
