@@ -97,19 +97,11 @@ public class QuestionBankController {
     public Result<Boolean> isCollected(@PathVariable("questionId") Long questionId){
         Long userId = BaseContext.getCurrentId();
         LambdaQueryWrapper<Collection> queryWrapper = new LambdaQueryWrapper();
-        queryWrapper.eq(Collection::getUserId, userId);
-        List<Collection> questionBankIds = collectionService.list(queryWrapper);
-        List<Long> idList = new ArrayList<Long>();
-        if (queryWrapper != null) {
-            for(Collection t : questionBankIds){
-                idList.add(t.getQuestionId());
-                if(t.getQuestionId() == questionId){
-                    return Result.success(true);
-                }
-            }
+        queryWrapper.eq(Collection::getUserId, userId).eq(Collection::getQuestionId, questionId);
+        int count = collectionService.count(queryWrapper);
+        if (count > 0) {
+            return Result.success(true);
         }
-        log.info("userId: " + userId);
-        log.info("idList: " + idList);
         return Result.success(false);
     }
 }
