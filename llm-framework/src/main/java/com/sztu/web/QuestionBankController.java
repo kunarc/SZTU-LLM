@@ -57,12 +57,22 @@ public class QuestionBankController {
     @PutMapping
     public Result<?> CreateNewCollection(@RequestParam("id") Long id) {
         Long userId = BaseContext.getCurrentId();
-        Collection collection = new Collection();
-        collection.setUserId(userId);
-        collection.setQuestionId(id);
-        collectionService.save(collection);
-        //log.info("收藏成功");
-        return Result.success();
+
+        LambdaQueryWrapper<Collection> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Collection::getUserId, userId).eq(Collection::getQuestionId, id);
+        int count = collectionService.count(queryWrapper);
+        if (count > 0) {
+            // 已经收藏过该题目
+            return Result.error("您已经收藏过该题目");
+        } else {
+            // 未收藏过该题目，创建新的收藏记录
+            Collection collection = new Collection();
+            collection.setUserId(userId);
+            collection.setQuestionId(id);
+            collectionService.save(collection);
+            //log.info("收藏成功");
+            return Result.success();
+        }
     }
 
     @GetMapping("/{userId}")
@@ -81,5 +91,25 @@ public class QuestionBankController {
             return Result.success(questionBanks);
         }
         return Result.error("查询失败");
+    }
+
+    @GetMapping("/{questionId}/isCollected")
+    public Result<Boolean> isCollected(@PathVariable("questionId") Long questionId){
+        Long userId = BaseContext.getCurrentId();
+        LambdaQueryWrapper<Collection> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.eq(Collection::getUserId, userId);
+        List<Collection> questionBankIds = collectionService.list(queryWrapper);
+        List<Long> idList = new ArrayList<Long>();
+        if (queryWrapper != null) {
+            for(Collection t : questionBankIds){
+                idList.add(t.getQuestionId());
+                if(t.getQuestionId() == questionId){
+                    return Result.success(true);
+                }
+            }
+        }
+        log.info("userId: " + userId);
+        log.info("idList: " + idList);
+        return Result.success(false);
     }
 }
