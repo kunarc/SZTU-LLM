@@ -10,7 +10,7 @@ spring:
     password: 200483
   redis:
     port: 6379
-    host: redis
+    host: 127.0.0.1
     database: 3
 #  jackson:
 #    serialization:

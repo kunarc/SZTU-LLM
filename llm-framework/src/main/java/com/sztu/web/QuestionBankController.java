@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sztu.context.BaseContext;
 import com.sztu.entity.Collection;
 import com.sztu.entity.QuestionBank;
+import com.sztu.entity.User;
 import com.sztu.result.Result;
 import com.sztu.service.CollectionService;
 import com.sztu.service.QuestionBankService;
+import com.sztu.service.UserService;
 import com.sztu.vo.QuestionBankVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +27,9 @@ public class QuestionBankController {
 
     @Autowired
     private CollectionService collectionService;
+
+    @Autowired
+    private UserService userService;
     /***
      * 根据题号查询题目答案
      * @param
@@ -54,23 +59,34 @@ public class QuestionBankController {
         return Result.success(questionBankService.getById(id));
     }
 
-    @PutMapping
-    public Result<?> CreateNewCollection(@RequestParam("id") Long id) {
+    @PutMapping("/{questionId}")
+    public Result<?> CreateNewCollection(@PathVariable("questionId") Long questionId) {
+
         Long userId = BaseContext.getCurrentId();
-        Result<Boolean> isNewCollection = isCollected(id);
-        if(isNewCollection.getData()){
-            return Result.error("您已收藏该题目");
+        LambdaQueryWrapper<Collection> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.eq(Collection::getUserId, userId).eq(Collection::getQuestionId, questionId);
+        int count = collectionService.count(queryWrapper);
+        if (count > 0) {
+            return Result.error("您已收藏该题");
         }
         // 未收藏过该题目，创建新的收藏记录
         Collection collection = new Collection();
         collection.setUserId(userId);
-        collection.setQuestionId(id);
+        collection.setQuestionId(questionId);
         collectionService.save(collection);
         return Result.success("收藏成功");
     }
 
-    @GetMapping("/{userId}")
-    public Result<List<QuestionBank>> getQuestionBankCollection(@PathVariable("userId") Long userId) {
+    @GetMapping("/{studentId}")
+    public Result<List<QuestionBank>> getQuestionBankCollection(@PathVariable("studentId") Long studentId) {
+        LambdaQueryWrapper<User> wrapper  = new LambdaQueryWrapper();
+        wrapper.eq(User::getStudentId, studentId);
+        log.info("studentId: " + studentId);
+        Long userId = Long.valueOf(userService.getOne(wrapper).getId());
+        if(userId == null) {
+            return Result.error("用户不存在");
+        }
+        log.info("userId: "+ userId);
         LambdaQueryWrapper<Collection> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.eq(Collection::getUserId, userId);
         List<Collection> questionBankIds = collectionService.list(queryWrapper);
@@ -87,7 +103,8 @@ public class QuestionBankController {
         return Result.error("查询失败");
     }
 
-    @GetMapping("/{questionId}/isCollected")
+    //判断是否有收藏
+    @GetMapping("/isCollected/{questionId}")
     public Result<Boolean> isCollected(@PathVariable("questionId") Long questionId){
         Long userId = BaseContext.getCurrentId();
         LambdaQueryWrapper<Collection> queryWrapper = new LambdaQueryWrapper();
@@ -97,5 +114,29 @@ public class QuestionBankController {
             return Result.success(true);
         }
         return Result.success(false);
+    }
+
+    //取消收藏
+    @DeleteMapping("/cancelCollection/{id}")
+    public Result<?> CancelCollection(@PathVariable("id") Long questionId) {
+        Long userId = BaseContext.getCurrentId();
+        Collection collection = new Collection();
+        collection.setUserId(userId);
+        collection.setQuestionId(questionId);
+        // 检查是否已经收藏
+        Result<Boolean> isCollected = isCollected(questionId);
+        if (isCollected.getData()) {
+            // 如果已经收藏，删除收藏记录
+            LambdaQueryWrapper<Collection> deleteWrapper = new LambdaQueryWrapper<>();
+            deleteWrapper.eq(Collection::getUserId, userId).eq(Collection::getQuestionId, questionId);
+            boolean removed = collectionService.remove(deleteWrapper);
+            if (removed) {
+                return Result.success("取消收藏成功");
+            } else {
+                return Result.error("取消收藏失败");
+            }
+        } else {
+            return Result.error("该题目未被收藏");
+        }
     }
 }
