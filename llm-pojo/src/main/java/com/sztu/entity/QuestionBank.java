@@ -24,7 +24,8 @@ public class QuestionBank implements Serializable {
 
 
     private String name;
-
+    private String questionCommon;
+    private String questionKnowledge;
 
     private String description;
 
