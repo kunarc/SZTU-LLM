@@ -1,10 +1,9 @@
 package com.sztu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sztu.context.BaseContext;
 import com.sztu.dto.UserDto;
+import com.sztu.dto.UserRegisterDto;
 import com.sztu.entity.User;
 import com.sztu.exception.LoginException;
 import com.sztu.mapper.UserMapper;
@@ -18,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +28,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public JwtProperties jwtProperties;
     @Autowired
     public UserMapper userMapper;
+
     @Override
     public Result<UserVo> login(UserDto userDto) {
         String studentId = userDto.getStudentId();
@@ -54,4 +55,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userVo.setToken(token);
         return Result.success(userVo);
     }
+
+    /**
+     * 注册接口
+     * @param userRegisterDto 用户注册信息Dto
+     * @return 注册成功
+     */
+    @Override
+    public Result<?> register(UserRegisterDto userRegisterDto) {
+        User user = User.builder()
+                .studentId(userRegisterDto.getStudentId())
+                .password(userRegisterDto.getPassword())
+                .name(userRegisterDto.getName())
+                .createTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
+                .build();
+        int inserted = userMapper.insert(user);
+        if (0==inserted) {
+            return Result.error("注册失败");
+        }
+        return Result.success("注册成功");
+    }
+
 }
