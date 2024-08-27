@@ -58,8 +58,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 注册接口
+     *
      * @param userRegisterDto 用户注册信息Dto
-     * @return 注册成功
+     * @return 注册结果
      */
     @Override
     public Result<?> register(UserRegisterDto userRegisterDto) {
@@ -71,7 +72,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .updateTime(LocalDateTime.now())
                 .build();
         int inserted = userMapper.insert(user);
-        if (0==inserted) {
+        if (0 == inserted) {
             return Result.error("注册失败");
         }
         return Result.success("注册成功");
