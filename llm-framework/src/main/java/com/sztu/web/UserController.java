@@ -1,5 +1,6 @@
 package com.sztu.web;
 
+import com.sztu.dto.PasswordDto;
 import com.sztu.dto.UserDto;
 
 import com.sztu.dto.UserRegisterDto;
@@ -31,4 +32,11 @@ public class UserController {
         log.info("注册用户信息：{}", userRegisterDto);
         return userService.register(userRegisterDto);
     }
+
+    @PostMapping("/password")
+    public Result<?> changePassword(@RequestBody PasswordDto passwordDto) {
+        log.info("修改密码信息: {}", passwordDto);
+        return userService.changePassword(passwordDto);
+    }
+
 }
